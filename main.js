@@ -5,7 +5,8 @@ function main() {
     var vertices = [ 
         0.5, 0.5, //A : Kanan atas
         0.0, 0.0,//B : Bawah Tengah
-        -0.5, 0.5 //C : Kiri Atas
+        -0.5, 0.5, //C : Kiri Atas
+        0.0, 1.0 //D: Atas Tengah
     ]; //buat array untuk segitiga, tapi ini masih di cpu
 
     var buffer = gl.createBuffer(); 
@@ -64,9 +65,12 @@ function main() {
     //            Red   Green   Blue    Alpha(Opacity)
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    gl.drawArrays(gl.POINTS, 0, 3); 
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); 
     //          jenis      data     count
 }
 
 window.onload = main;
 
+//LINE_LOOP : looping
+//LINE_STRIP : ngga balik
+//LINES : dua titik
