@@ -3,10 +3,10 @@ function main() {
     var gl = kanvas.getContext("webgl");
 
     var vertices = [ 
-        0.5, 0.5, 0.0, 1.0, 1.0, //A : Kanan atas (CYAN)
-        0.0, 0.0, 1.0, 0.0, 1.0,//B : Bawah Tengah (MAGENTA)
-        -0.5, 0.5, 1.0, 1.0, 0.0, //C : Kiri Atas (KUNING)
-        0.0, 1.0, 1.0, 1.0, 1.0 //D: Atas Tengah (Putih)
+        0.5, 0.0, 0.0, 1.0, 1.0, //A : Kanan atas (CYAN)
+        0.0, -0.5, 1.0, 0.0, 1.0,//B : Bawah Tengah (MAGENTA)
+        -0.5, 0.0, 1.0, 1.0, 0.0, //C : Kiri Atas (KUNING)
+        0.0, 0.5, 1.0, 1.0, 1.0 //D: Atas Tengah (Putih)
     ]; //buat array untuk segitiga, tapi ini masih di cpu
 
     var buffer = gl.createBuffer(); 
@@ -54,6 +54,7 @@ function main() {
 
     //Variabel lokal
     var theta = 0.0;
+    var freeze = false;
 
     //Variabel pointer ke GLSL
     var uTheta = gl.getUniformLocation(shaderProgram, "uTheta")
@@ -76,12 +77,20 @@ function main() {
     //                      index   dimensi              warna
     gl.enableVertexAttribArray(aColor);
 
+    //Grafika Interaktif
+    function onMouseClick(event) {
+        freeze =!freeze;
+    }
+    document.addEventListener("click", onMouseClick);
+
     function render() {
             gl.clearColor(0.0,  0.0,    5.0,    1.0);
             //            Red   Green   Blue    Alpha(Opacity)
             gl.clear(gl.COLOR_BUFFER_BIT);
-            theta += 0.1;
-            gl.uniform1f(uTheta, theta);
+            if(!freeze) {
+                theta += 0.1;
+                gl.uniform1f(uTheta, theta);
+            }
             gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); 
             //          jenis      data     count
             requestAnimationFrame(render);
