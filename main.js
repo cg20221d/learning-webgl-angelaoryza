@@ -3,10 +3,10 @@ function main() {
     var gl = kanvas.getContext("webgl");
 
     var vertices = [ 
-        0.5, 0.5, //A : Kanan atas
-        0.0, 0.0,//B : Bawah Tengah
-        -0.5, 0.5, //C : Kiri Atas
-        0.0, 1.0 //D: Atas Tengah
+        0.5, 0.5, 0.0, 1.0, 1.0, //A : Kanan atas (CYAN)
+        0.0, 0.0, 1.0, 0.0, 1.0,//B : Bawah Tengah (MAGENTA)
+        -0.5, 0.5, 1.0, 1.0, 0.0, //C : Kiri Atas (KUNING)
+        0.0, 1.0, 1.0, 1.0, 1.0 //D: Atas Tengah (Putih)
     ]; //buat array untuk segitiga, tapi ini masih di cpu
 
     var buffer = gl.createBuffer(); 
@@ -18,12 +18,14 @@ function main() {
     var vertexShaderCode = 
     `
         attribute vec2 aPosition;
+        attribute vec3 aColor;
+        varying vec3 vColor;
         void main() {
             float x = aPosition.x;
             float y = aPosition.y;
             gl_PointSize = 10.0;
             gl_Position = vec4(x, y, 0.0, 1.0);
-            
+            vColor = aColor;
         }
         `;
 
@@ -32,13 +34,10 @@ function main() {
     gl.compileShader(vertexShaderObject); // sampai sini udah jadi .o
     //Fragment Shaders
     var fragmentShaderCode = `
+    precision mediump float;
+    varying vec3 vColor;
         void main() {
-            precision mediump float;
-            float r = 5.0;
-            float g = 1.0;
-            float b = 0.0;
-            float a = 1.0;
-            gl_FragColor = vec4(r, g, b, a);
+            gl_FragColor = vec4(vColor, 1.0);
         }
         `;
 
@@ -57,9 +56,18 @@ function main() {
     //untuk setiap verteks yang sedang diproses
 
     var aPosition = gl.getAttribLocation(shaderProgram, "aPosition");
-    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        0);
     //                      index   dimensi              warna
     gl.enableVertexAttribArray(aPosition);
+
+    var aColor = gl.getAttribLocation(shaderProgram, "aColor");
+    gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 
+        5 * Float32Array.BYTES_PER_ELEMENT, 
+        2 * Float32Array.BYTES_PER_ELEMENT);
+    //                      index   dimensi              warna
+    gl.enableVertexAttribArray(aColor);
 
     gl.clearColor(0.0,  0.0,    5.0,    1.0);
     //            Red   Green   Blue    Alpha(Opacity)
