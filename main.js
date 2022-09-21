@@ -19,11 +19,12 @@ function main() {
     `
         attribute vec2 aPosition;
         attribute vec3 aColor;
+        uniform float uTheta;
         varying vec3 vColor;
         void main() {
-            float x = aPosition.x;
-            float y = aPosition.y;
-            gl_PointSize = 10.0;
+            float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
+            float y = sin(uTheta) * aPosition.y + cos(uTheta) * aPosition.x;
+            // gl_PointSize = 10.0;
             gl_Position = vec4(x, y, 0.0, 1.0);
             vColor = aColor;
         }
@@ -51,6 +52,12 @@ function main() {
     gl.linkProgram(shaderProgram); 
     gl.useProgram(shaderProgram);
 
+    //Variabel lokal
+    var theta = 0.0;
+
+    //Variabel pointer ke GLSL
+    var uTheta = gl.getUniformLocation(shaderProgram, "uTheta")
+
     //Mengajari GPU bagaimana caranya mengoleksi
     // nilai posisi dari ARRAY_BUFFER
     //untuk setiap verteks yang sedang diproses
@@ -69,12 +76,19 @@ function main() {
     //                      index   dimensi              warna
     gl.enableVertexAttribArray(aColor);
 
-    gl.clearColor(0.0,  0.0,    5.0,    1.0);
-    //            Red   Green   Blue    Alpha(Opacity)
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    function render() {
+            gl.clearColor(0.0,  0.0,    5.0,    1.0);
+            //            Red   Green   Blue    Alpha(Opacity)
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            theta += 0.1;
+            gl.uniform1f(uTheta, theta);
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); 
+            //          jenis      data     count
+            requestAnimationFrame(render);
+    }
+    // setInterval(render, 10000/60);
+    requestAnimationFrame(render);
 
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); 
-    //          jenis      data     count
 }
 
 window.onload = main;
