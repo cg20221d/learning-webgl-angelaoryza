@@ -20,10 +20,12 @@ function main() {
         attribute vec2 aPosition;
         attribute vec3 aColor;
         uniform float uTheta;
+        uniform float udX;
+        uniform float udY;
         varying vec3 vColor;
         void main() {
-            float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
-            float y = sin(uTheta) * aPosition.y + cos(uTheta) * aPosition.x;
+            float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y + udX;
+            float y = sin(uTheta) * aPosition.y + cos(uTheta) * aPosition.x + udY;
             // gl_PointSize = 10.0;
             gl_Position = vec4(x, y, 0.0, 1.0);
             vColor = aColor;
@@ -55,9 +57,13 @@ function main() {
     //Variabel lokal
     var theta = 0.0;
     var freeze = false;
+    var x = 0.0;
+    var y = 0.0;
 
     //Variabel pointer ke GLSL
-    var uTheta = gl.getUniformLocation(shaderProgram, "uTheta")
+    var uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
+    var udX = gl.getUniformLocation(shaderProgram, "udX");
+    var udY = gl.getUniformLocation(shaderProgram, "udY");
 
     //Mengajari GPU bagaimana caranya mengoleksi
     // nilai posisi dari ARRAY_BUFFER
@@ -79,9 +85,26 @@ function main() {
 
     //Grafika Interaktif
     function onMouseClick(event) {
-        freeze =!freeze;
+        freeze = !freeze;
     }
-    document.addEventListener("click", onMouseClick);
+
+    function onKeyDown(event) {
+        if (event.keyCode == 32) freeze = !freeze;
+    }
+
+    function onKeyUp(event) {
+        if (event.keyCode == 65) x -= 0.1;
+        if (event.keyCode == 87) y += 0.1;
+        if (event.keyCode == 83) y -= 0.1;
+        if (event.keyCode == 68) x += 0.1;
+    }
+
+    function onKeyA(event) {
+        if(event.keyCode == 65) freeze = !freeze;
+    }
+     document.addEventListener("click", onMouseClick);
+     document.addEventListener("keydown", onKeyDown);
+     document.addEventListener("keyup", onKeyUp);
 
     function render() {
             gl.clearColor(0.0,  0.0,    5.0,    1.0);
@@ -91,6 +114,8 @@ function main() {
                 theta += 0.1;
                 gl.uniform1f(uTheta, theta);
             }
+            gl.uniform1f(udX, x);
+            gl.uniform1f(udY, y);
             gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); 
             //          jenis      data     count
             requestAnimationFrame(render);
