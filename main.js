@@ -24,10 +24,18 @@ function main() {
         uniform float udY;
         varying vec3 vColor;
         void main() {
-            float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y + udX;
-            float y = sin(uTheta) * aPosition.y + cos(uTheta) * aPosition.x + udY;
-            // gl_PointSize = 10.0;
-            gl_Position = vec4(x, y, 0.0, 1.0);
+            // float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y + udX;
+            // float y = sin(uTheta) * aPosition.y + cos(uTheta) * aPosition.x + udY;
+            // gl_Position = vec4(x, y, 0.0, 1.0);
+
+
+            vec2 position = aPosition;
+            vec3 d = vec3(0.5, -0.5, 0.0);
+            mat4 translation = mat4(1.0, 0.0, 0.0, 0.0,
+                                   0.0, 1.0, 0.0, 0.0,
+                                   0.0, 0.0, 1.0, 0.0,
+                                   d.x,  d.y,  d.z,  1.0);
+            gl_Position = translation * vec4(position, 0.0, 1.0);
             vColor = aColor;
         }
         `;
@@ -110,12 +118,12 @@ function main() {
             gl.clearColor(0.0,  0.0,    5.0,    1.0);
             //            Red   Green   Blue    Alpha(Opacity)
             gl.clear(gl.COLOR_BUFFER_BIT);
-            if(!freeze) {
-                theta += 0.1;
-                gl.uniform1f(uTheta, theta);
-            }
-            gl.uniform1f(udX, x);
-            gl.uniform1f(udY, y);
+            // if(!freeze) {
+            //     theta += 0.1;
+            //     gl.uniform1f(uTheta, theta);
+            // }
+            // gl.uniform1f(udX, x);
+            // gl.uniform1f(udY, y);
             gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); 
             //          jenis      data     count
             requestAnimationFrame(render);
